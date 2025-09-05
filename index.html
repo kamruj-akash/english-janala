@@ -116,13 +116,20 @@
       <!-- levelContainer -->
       <div
         id="level_Container"
-        class="flex gap-4 flex-wrap justify-center"
+        class="flex gap-4 flex-wrap justify-center mb-10"
       ></div>
       <!-- words card -->
       <div
         id="words_cards"
-        class="grid grid-col-1 gap-5 bg-[#F8F8F8] p-5"
-      ></div>
+        class="grid grid-col-1 gap-5 bg-[#F8F8F8] p-5 md:grid-cols-3"
+      >
+        <div class="col-span-full items-center flex flex-col">
+          <p class="my-4 text-xl">আপনি এখনো কোন Lesson Select করেন নি</p>
+          <h2 class="card-title text-4xl text-bangla">
+            একটি Lesson Select করুন।
+          </h2>
+        </div>
+      </div>
     </section>
     <script src="script/index.js"></script>
   </body>
