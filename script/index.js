@@ -22,8 +22,6 @@ const allLessons = (lessons) => {
 };
 
 const loadLessonLevel = (id) => {
-  console.log(id);
-
   const url = `https://openapi.programming-hero.com/api/level/${id}`;
   fetch(url)
     .then((res) => res.json())
@@ -33,6 +31,17 @@ const loadLessonLevel = (id) => {
 const lessonWords = (words) => {
   const wordsCards = getID("words_cards");
   wordsCards.innerHTML = "";
+  if (words.length == 0) {
+    wordsCards.innerHTML = `
+    <div class="col-span-full items-center flex flex-col text-center">
+    <img src="../assets/alert-error.png" alt="alert">
+     <p class="my-4 text-xl">এই Lesson এ এখনো কোন Vocabulary যুক্ত করা হয়নি।</p>
+          <h2 class="card-title text-4xl text-bangla">
+          নেক্সট Lesson এ যান
+          </h2>
+        </div>
+    `;
+  }
 
   words.forEach((words) => {
     const word = words.word;
@@ -43,9 +52,11 @@ const lessonWords = (words) => {
     newDiv.innerHTML = `
     <div class="card text-black bg-white rounded-lg">
           <div class="card-body items-center text-center">
-            <h2 class="card-title text-4xl">${word}</h2>
+            <h2 class="card-title text-4xl">${word ? word : "পাওয়া যায়নি"}</h2>
             <p class="my-4 text-xl">Meaning / Pronounciation</p>
-            <h2 class="card-title text-4xl text-bangla">"${meaning} / ${pronunciation}"</h2>
+            <h2 class="card-title text-4xl text-bangla">"${
+              meaning ? meaning : "পাওয়া যায়নি"
+            } / ${pronunciation ? pronunciation : "পাওয়া যায়নি"}"</h2>
             <div class="justify-between w-full">
               <button class="btn btn-ghost">
                 <i class="fa-solid fa-circle-info"></i>
