@@ -1,5 +1,21 @@
 // re-useable functions
 const getID = (id) => document.getElementById(id);
+const manageSpinner = (spin) => {
+  if (spin == true) {
+    getID("spinner").classList.remove("hidden");
+    getID("words_cards").classList.add("hidden");
+  } else {
+    getID("spinner").classList.add("hidden");
+    getID("words_cards").classList.remove("hidden");
+  }
+};
+const synonymsLoad = (arr) => {
+  const joinArr = arr.map(
+    (arr) =>
+      `<button class="btn bg-[#EDF7FF] text-black font-normal">${arr}</button>`
+  );
+  return joinArr.join(" ");
+};
 
 const loadLessons = () => {
   const url = "https://openapi.programming-hero.com/api/levels/all";
@@ -46,24 +62,6 @@ const loadWordDetails = async (id) => {
   const res = await fetch(url);
   const details = await res.json();
   modalPopUp(details);
-};
-
-const manageSpinner = (spin) => {
-  if (spin == true) {
-    getID("spinner").classList.remove("hidden");
-    getID("words_cards").classList.add("hidden");
-  } else {
-    getID("spinner").classList.add("hidden");
-    getID("words_cards").classList.remove("hidden");
-  }
-};
-
-const synonymsLoad = (arr) => {
-  const joinArr = arr.map(
-    (arr) =>
-      `<button class="btn bg-[#EDF7FF] text-black font-normal">${arr}</button>`
-  );
-  return joinArr.join(" ");
 };
 
 const modalPopUp = (word) => {
@@ -134,16 +132,39 @@ const lessonWords = (words) => {
                   <i class="fa-solid fa-circle-info"></i>
               </button>
 
-              <button id="word_speak_btn" class="btn btn-ghost">
+              <button id="word_speak_btn" onClick="pronounceWord('${word}')" class="btn btn-ghost">
                 <i class="fa-solid fa-volume-high"></i>
               </button>
           </div>
       </div> 
     `;
-    //my_modal_1.showModal() -> modal function
+
     wordsCards.appendChild(newDiv);
   });
   manageSpinner(false);
 };
+
+// speak function
+function pronounceWord(word) {
+  const utterance = new SpeechSynthesisUtterance(word);
+  utterance.lang = "en-EN"; // English
+  window.speechSynthesis.speak(utterance);
+}
+
+// search function
+getID("search_btn").addEventListener("click", () => {
+  const input = getID("search_value");
+  const searchValue = input.value.trim("").toLowerCase();
+
+  fetch("https://openapi.programming-hero.com/api/words/all")
+    .then((res) => res.json())
+    .then((data) => {
+      const allWords = data.data;
+      const filterWords = allWords.filter((word) => {
+        word.word.toLowerCase().includes(searchValue);
+      });
+      console.log(filterWords);
+    });
+});
 // default function call
 loadLessons();
