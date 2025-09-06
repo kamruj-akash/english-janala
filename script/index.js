@@ -3,7 +3,6 @@ const getID = (id) => document.getElementById(id);
 
 const loadLessons = () => {
   const url = "https://openapi.programming-hero.com/api/levels/all";
-
   fetch(url)
     .then((res) => res.json())
     .then((lessons) => allLessons(lessons.data));
@@ -22,6 +21,7 @@ const allLessons = (lessons) => {
 };
 
 const loadLessonLevel = (id) => {
+  manageSpinner(true);
   const url = `https://openapi.programming-hero.com/api/level/${id}`;
   fetch(url)
     .then((res) => res.json())
@@ -41,6 +41,60 @@ const removeActive = () => {
   );
 };
 
+const loadWordDetails = async (id) => {
+  const url = `https://openapi.programming-hero.com/api/word/${id}`;
+  const res = await fetch(url);
+  const details = await res.json();
+  modalPopUp(details);
+};
+
+const manageSpinner = (spin) => {
+  if (spin == true) {
+    getID("spinner").classList.remove("hidden");
+    getID("words_cards").classList.add("hidden");
+  } else {
+    getID("spinner").classList.add("hidden");
+    getID("words_cards").classList.remove("hidden");
+  }
+};
+
+const synonymsLoad = (arr) => {
+  const joinArr = arr.map(
+    (arr) =>
+      `<button class="btn bg-[#EDF7FF] text-black font-normal">${arr}</button>`
+  );
+  return joinArr.join(" ");
+};
+
+const modalPopUp = (word) => {
+  getID("modal_popUp").showModal();
+  const modalDiv = getID("word_info_div");
+  modalDiv.innerHTML = "";
+  const newDiv = document.createElement("div");
+  newDiv.innerHTML = `
+            <h2 class="card-title text-4xl">
+              ${
+                word.data.word
+              } (<i class="fa-solid fa-microphone-lines"></i>:>${
+    word.data.pronunciation
+  })
+            </h2>
+            <p class="mt-3 text-xl font-thin">Meaning</p>
+            <h2 class="card-title text-2xl text-bangla">${
+              word.data.meaning
+            }</h2>
+            <p class="mt-3 text-xl font-thin">Example</p>
+            <h2 class="card-title text-xl font-normal text-bangla">
+             ${word.data.sentence}
+            </h2>
+            <p class="mt-3 mb-1 text-xl text-bangla font-thin">
+              সমার্থক শব্দ গুলো
+            </p>
+            <div class="flex gap-2">${synonymsLoad(word.data.synonyms)}</div>
+  `;
+  modalDiv.appendChild(newDiv);
+};
+
 const lessonWords = (words) => {
   const wordsCards = getID("words_cards");
   wordsCards.innerHTML = "";
@@ -54,13 +108,14 @@ const lessonWords = (words) => {
           </h2>
         </div>
     `;
+    manageSpinner(false);
+    return;
   }
 
   words.forEach((words) => {
     const word = words.word;
     const meaning = words.meaning;
     const pronunciation = words.pronunciation;
-
     const newDiv = document.createElement("div");
     newDiv.innerHTML = `
     <div class="card text-black bg-white rounded-lg p-5">
@@ -74,7 +129,8 @@ const lessonWords = (words) => {
           
           <div class="flex justify-between w-full">
               <button id="word_info_btn" class="btn btn-ghost"
-                  onclick="my_modal_1.showModal()" >
+                  onclick="loadWordDetails(${words.id})" >
+                  
                   <i class="fa-solid fa-circle-info"></i>
               </button>
 
@@ -82,11 +138,12 @@ const lessonWords = (words) => {
                 <i class="fa-solid fa-volume-high"></i>
               </button>
           </div>
-      </div>
+      </div> 
     `;
-
+    //my_modal_1.showModal() -> modal function
     wordsCards.appendChild(newDiv);
   });
+  manageSpinner(false);
 };
 // default function call
 loadLessons();
